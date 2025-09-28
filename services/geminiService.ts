@@ -1,28 +1,29 @@
 
-import { GoogleGenAI, FunctionDeclaration, Type, Chat } from "@google/genai";
+import { GoogleGenerativeAI, FunctionDeclaration, SchemaType } from "@google/generative-ai";
 import type { BuildType, NodeGraph, Workflow } from '../types';
 import { ALL_TAGS } from '../constants';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
+const apiKey = import.meta.env.VITE_API_KEY;
+if (!apiKey) {
+    throw new Error("VITE_API_KEY environment variable not set");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenerativeAI(apiKey);
 
 // --- V2 Services (Classic Build System) ---
 
 const setTagFunctionDeclaration: FunctionDeclaration = {
   name: 'setTag',
   parameters: {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     description: 'Sets a specific creative tag with a value. Use this to capture user decisions and build a creative context.',
     properties: {
       tagName: {
-        type: Type.STRING,
+        type: SchemaType.STRING,
         description: `The name of the tag to set. Must be one of: ${Object.values(ALL_TAGS).flat().map(t => t.id).join(', ')}`
       },
       value: {
-        type: Type.STRING,
+        type: SchemaType.STRING,
         description: 'The value to assign to the tag.'
       }
     },
